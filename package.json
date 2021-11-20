@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "node index.js"
+    "dev": "nodemon index.js"
   },
   "repository": {
     "type": "git",
@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/Jood80/puppetter-abc#readme",
   "dependencies": {
+    "nodemon": "^2.0.15",
     "puppeteer": "^11.0.0"
   }
 }
