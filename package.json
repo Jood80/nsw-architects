@@ -1,0 +1,22 @@
+{
+  "name": "puppetter-abc",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Jood80/puppetter-abc.git"
+  },
+  "author": "Nujood",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Jood80/puppetter-abc/issues"
+  },
+  "homepage": "https://github.com/Jood80/puppetter-abc#readme",
+  "dependencies": {
+    "puppeteer": "^11.0.0"
+  }
+}
