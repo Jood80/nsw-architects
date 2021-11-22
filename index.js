@@ -1,26 +1,47 @@
 const puppeteer = require('puppeteer');
 const fs = require('fs/promises')
 
-const MOVIE_URL = 'https://www.imdb.com/title/tt7846844/?ref_=nv_sr_srsg_6'
+const NSW_URL = 'https://www.architects.nsw.gov.au/architects-register?view=architects&regSearchName=a&start=270'
+const selector = 'tbody tr'
 
-const scrapeMovies = async (url) => {
-
+const scrapeArchitects = async (url, selector) => {
   const browser = await puppeteer.launch({ headless: true })
   const page = await browser.newPage()
   await page.goto(url, {
     waitUntil: 'networkidle2'
   })
 
-  let movieMeta = await page.evaluate(() => {
-    return {
-      title: document.querySelector('div[class="TitleBlock__TitleContainer-sc-1nlhx7j-1 jxsVNt"] > h1').innerText,
-      rating: document.querySelector('div[class="AggregateRatingButton__Rating-sc-1ll29m0-2 bmbYRW"] > span').innerText
-    }
-  })
-  await fs.writeFile('movie_details.txt', JSON.stringify(movieMeta))
+  const links = await page.$$eval(selector, x => x.map(x => x.firstElementChild.firstElementChild.href))
+
+  // let links = [...document.querySelectorAll(selector)].map(x => x.firstElementChild.firstElementChild.href)
+
+
+  // let details = [...selector].filter(x => x.textContent.trim()).map(x => {
+  //   let key = x.textContent.split(":")[0];
+  //   let value = x.textContent.split(":")[1];
+  //   return (key === "Social Networks") ? {
+  //     [key]: x.lastElementChild.lastElementChild.href
+  //   } : { [key]: value }
+  // })
+
+  console.log(links)
+
+  // let list = await page.$$( '.titleColumn' );
+
+  await fs.writeFile('architects_urls.json', JSON.stringify(links))
+  // await fs.writeFile('architects_details.json', details)
 
   await browser.close()
 }
 
 
-scrapeMovies(MOVIE_URL)
+scrapeArchitects(NSW_URL, selector)
+
+
+
+  // let movies_urls = await page.evaluate(() => [...document.querySelectorAll('.ratingColumn')].map(td => td.strong))
+
+  // let movies_images = await page.evaluate( () => [ ...document.querySelectorAll( '.posterColumn a img' ) ].map( img => img.src ) )
+  // let movies_urls = await page.evaluate( () => [ ...document.querySelectorAll( '.posterColumn' ) ].map( a => a.href ) )
+  // let movies_titles = await page.evaluate( () => [ ...document.querySelectorAll( '.titleColumn' ) ].map( a => a.innerText ) )
+  // let movies_ratings = await page.evaluate( () => [ ...document.querySelectorAll( '.ratingColumn' ) ].map( td => td.strong ) )
