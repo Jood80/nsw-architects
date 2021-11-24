@@ -13,6 +13,7 @@ const architects = {
     })
     architects.page = await architects.browser.newPage()
     await architects.page.goto(BASE_URL(limit), { waitUntil: 'domcontentloaded' })
+    architects.page.waitForNavigation()
   },
 
   getLinks: async (selector) => {
@@ -20,27 +21,30 @@ const architects = {
     return links
   },
 
-  getDetails: async (url) => {
-    await architects.page.goto(url, { waitUntil: 'load' })
+  getDetails: async (urls) => {
+    let res = []
+    for (let url of urls) {
+      await architects.page.goto(url, { waitUntil: 'load' })
 
-    const name = await architects.page.evaluate(() => document.querySelector('#system > h2').textContent)
-    const info = await architects.page.$$eval("tr", x => x.filter(x => x.textContent.trim()).map(x => {
-      let key = x.textContent.split(":")[0];
-      let value = x.textContent.split(":")[1];
-      return (key === "Social Networks") ? {
-        [key]: x.lastElementChild.lastElementChild.href
-      } : { [key]: value }
-    }))
-    const details = Object.assign({}, ...info);
-
-    return {
-      name,
-      ...details,
+      const name = await architects.page.evaluate(() => document.querySelector('#system > h2').textContent)
+      const info = await architects.page.$$eval("tr", x => x.filter(x => x.textContent.trim()).map(x => {
+        let key = x.textContent.split(":")[0];
+        let value = x.textContent.split(":")[1];
+        return (key === "Social Networks") ? {
+          [key]: x.lastElementChild.lastElementChild.href
+        } : { [key]: value }
+      }))
+      const details = Object.assign({}, ...info);
+      res.push({
+        name,
+        ...details,
+      })
     }
+    return res
   },
 
   close: async () => {
-    await architects.page.close()
+    await architects.browser.close()
   }
 }
 
