@@ -12,8 +12,7 @@ const architects = {
       headless: false
     })
     architects.page = await architects.browser.newPage()
-    await architects.page.goto(BASE_URL(limit), { waitUntil: 'domcontentloaded' })
-    architects.page.waitForNavigation()
+    await architects.page.goto(BASE_URL(limit), { waitUntil: 'load' })
   },
 
   getLinks: async (selector) => {
@@ -35,12 +34,11 @@ const architects = {
         } : { [key]: value }
       }))
       const details = Object.assign({}, ...info);
-      res.push({
+      return res.push({
         name,
         ...details,
       })
     }
-    return res
   },
 
   close: async () => {
