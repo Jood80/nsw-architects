@@ -45,7 +45,7 @@ const architects = {
         name,
         ...details,
       })
-      await fs.writeFile('architect_details3.json', JSON.stringify([].concat(...res), null, 2))
+      await fs.writeFile('./data/architect_details.json', JSON.stringify([].concat(...res), null, 2))
     }
   },
 
