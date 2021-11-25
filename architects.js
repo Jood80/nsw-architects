@@ -15,6 +15,13 @@ const architects = {
     await architects.page.goto(BASE_URL(limit), { waitUntil: 'load' })
   },
 
+  getMaxLimit: async (init_limit) => {
+    await architects.initialize(init_limit)
+    const final_limit = await architects.page.evaluate(() => document.querySelector("div.pagination > ul> li.pagination-end > a").href.split("start=")[1])
+    await architects.close()
+    return +final_limit;
+  },
+
   getLinks: async (selector) => {
     let links = await architects.page.$$eval(selector, x => x.map(x => x.firstElementChild.firstElementChild.href))
     return links
@@ -34,6 +41,7 @@ const architects = {
         } : { [key]: value }
       }))
       const details = Object.assign({}, ...info);
+      await architects.close()
       return res.push({
         name,
         ...details,
