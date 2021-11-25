@@ -1,26 +1,28 @@
-const puppeteer = require('puppeteer');
-const fs = require('fs/promises')
+const fs = require('fs/promises');
+const scrapeArch = require('./requests/architects')
 
-const MOVIE_URL = 'https://www.imdb.com/title/tt7846844/?ref_=nv_sr_srsg_6'
+const main = async () => {
+  let curr_limit = 0, max_limit = 120, urls = [];
 
-const scrapeMovies = async (url) => {
+  try {
+    max_limit = await scrapeArch.getMaxLimit(curr_limit) //TODO: re-code this redundant request
+    while (curr_limit <= max_limit) {
+      await scrapeArch.initialize(curr_limit)
+      links = await scrapeArch.getLinks('tbody tr')
+      urls.push(links.length > 31 ? [... new Set(links)] : links) // Removed Duplicates
 
-  const browser = await puppeteer.launch({ headless: true })
-  const page = await browser.newPage()
-  await page.goto(url, {
-    waitUntil: 'networkidle2'
-  })
-
-  let movieMeta = await page.evaluate(() => {
-    return {
-      title: document.querySelector('div[class="TitleBlock__TitleContainer-sc-1nlhx7j-1 jxsVNt"] > h1').innerText,
-      rating: document.querySelector('div[class="AggregateRatingButton__Rating-sc-1ll29m0-2 bmbYRW"] > span').innerText
+      await fs.writeFile('./data/architect_urls.json', JSON.stringify([].concat(...urls), null, 2))
+      curr_limit += 30
     }
-  })
-  await fs.writeFile('movie_details.txt', JSON.stringify(movieMeta))
-
-  await browser.close()
+    await scrapeArch.getDetails([].concat(...urls))
+  }
+  catch (error) {
+    console.error(error.message);
+  }
+  finally {
+    await scrapeArch.close()
+  }
 }
 
+main()
 
-scrapeMovies(MOVIE_URL)
